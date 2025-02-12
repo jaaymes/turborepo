@@ -1,7 +1,7 @@
 import chalk from "chalk";
 import { exec, spawn } from "child_process";
 import dotenv from 'dotenv';
-import { readFileSync } from 'fs';
+import fs, { readFileSync } from 'fs';
 import inquirer from 'inquirer';
 import fetch from "node-fetch";
 import ora from "ora";
@@ -238,7 +238,34 @@ async function main() {
         });
       });
     } else {
-      console.log(chalk.yellow("Commit cancelado."));
+      // Abre o Vim para editar a mensagem de commit
+      const tempFilePath = '/tmp/commit_message.txt';
+
+      // Escreve a mensagem gerada em um arquivo temporário
+      fs.writeFileSync(tempFilePath, commitMessage);
+
+      // Abre o Vim para editar a mensagem
+      const vimProcess = spawn('vim', [tempFilePath], { stdio: 'inherit' });
+
+      vimProcess.on('exit', (code) => {
+        if (code !== 0) {
+          console.log(chalk.red("Edição da mensagem de commit cancelada."));
+          return;
+        }
+
+        // Lê a mensagem editada
+        const editedMessage = fs.readFileSync(tempFilePath, 'utf8').trim();
+
+        // Realiza o commit com a mensagem editada
+        exec(`git commit -m ${JSON.stringify(editedMessage)}`, (error, stdout, stderr) => {
+          if (error) {
+            console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
+            return;
+          }
+          console.log(chalk.green("\n✓ Commit realizado com a mensagem editada"));
+          console.log(chalk.green(stdout));
+        });
+      });
     }
   } catch (error) {
     console.error(chalk.red(`Erro: ${error.message}`));
