@@ -15,8 +15,7 @@
     "add:web": "pnpm add --filter=web",
     "cypress": "cd apps/web && pnpm cypress",
     "test": "turbo test",
-    "cz": "node scripts/ai-commit.mjs",
-    "prepare": "husky"
+    "cz": "node scripts/ai-commit.mjs"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
