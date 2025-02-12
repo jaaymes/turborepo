@@ -211,10 +211,19 @@ async function main() {
       // Executa os testes e o lint antes do commit
       console.log(chalk.blue("\nExecutando testes e verificação de código..."));
       
-      exec('pnpm test && pnpm lint', (error, stdout, stderr) => {
-        if (error) {
-          console.error(chalk.red("Falha nos testes ou lint:"));
-          console.error(chalk.red(stderr || error.message));
+      const testProcess = exec('pnpm test && pnpm lint');
+
+      testProcess.stdout.on('data', (data) => {
+        console.log(chalk.white(data.toString()));
+      });
+
+      testProcess.stderr.on('data', (data) => {
+        console.error(chalk.red(data.toString()));
+      });
+
+      testProcess.on('close', (code) => {
+        if (code !== 0) {
+          console.error(chalk.red("Falha nos testes ou lint."));
           return;
         }
 
