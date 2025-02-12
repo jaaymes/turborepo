@@ -30,11 +30,10 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
-    const prompt = `Você é um assistente especializado em Git e Conventional Commits. Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
+    const prompt = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
           ⚠️ **IMPORTANTE:**  
           - Responda **somente** em **português (pt-BR)**.  
           - Use a estrutura do **Conventional Commits**. 
-          - Seja conciso e direto.   
 
             ### 🔍 Alterações no código:  ${diff}`;
 
