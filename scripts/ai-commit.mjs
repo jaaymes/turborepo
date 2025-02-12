@@ -208,12 +208,25 @@ async function main() {
     ]);
 
     if (confirm) {
-      exec(`git commit -m ${JSON.stringify(commitMessage)}`, (error, stdout, stderr) => {
+      // Executa os testes e o lint antes do commit
+      console.log(chalk.blue("\nExecutando testes e verificação de código..."));
+      
+      exec('pnpm test && pnpm lint', (error, stdout, stderr) => {
         if (error) {
-          console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
+          console.error(chalk.red("Falha nos testes ou lint:"));
+          console.error(chalk.red(stderr || error.message));
           return;
         }
-        console.log(chalk.green(stdout));
+
+        // Se os testes e lint passaram, realiza o commit
+        exec(`git commit -m ${JSON.stringify(commitMessage)}`, (error, stdout, stderr) => {
+          if (error) {
+            console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
+            return;
+          }
+          console.log(chalk.green("\n✓ Testes e lint passaram"));
+          console.log(chalk.green(stdout));
+        });
       });
     } else {
       console.log(chalk.yellow("Commit cancelado."));
