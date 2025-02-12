@@ -1,0 +1,15 @@
+{
+  "extends": "@workspace/typescript-config/storybook.json",
+  "compilerOptions": {
+    "types": ["react-dom"]
+  },
+  "include": [
+    "**/*.ts", 
+    "**/*.tsx",
+    ".storybook/**/*.ts",
+    ".storybook/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

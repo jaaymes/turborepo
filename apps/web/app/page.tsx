@@ -1,4 +1,5 @@
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components";
+import "@workspace/ui/styles/globals.scss";
 
 export default function Page() {
   return (
@@ -8,5 +9,5 @@ export default function Page() {
         <Button size="sm">Button</Button>
       </div>
     </div>
-  )
+  );
 }

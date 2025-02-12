@@ -2,21 +2,41 @@
   "name": "shadcn-ui-monorepo",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
   "scripts": {
     "build": "turbo build",
+    "build:storybook": "turbo run build:storybook",
+    "start": "cd apps/web && pnpm start",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "add:ui": "pnpm add --filter=@workspace/ui",
+    "add:web": "pnpm add --filter=web",
+    "cypress": "cd apps/web && pnpm cypress",
+    "test": "turbo test",
+    "cz": "node scripts/ai-commit.mjs",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "chalk": "^5.4.1",
+    "dotenv": "^16.4.7",
+    "husky": "^9.1.7",
+    "inquirer": "^12.4.1",
+    "node-fetch": "^3.3.2",
+    "ora": "^8.2.0",
     "prettier": "^3.2.5",
-    "turbo": "^2.3.0",
-    "typescript": "5.5.4"
+    "turbo": "2.4.0",
+    "typescript": "^5.7.3"
   },
-  "packageManager": "pnpm@9.12.3",
+  "packageManager": "pnpm@10.2.0",
   "engines": {
     "node": ">=20"
-  }
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
 }
