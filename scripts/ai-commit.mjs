@@ -32,8 +32,7 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
-    if (AI_PROVIDER === "ollama") {
-      const prompt = `Você é um gerador de mensagens de commit.
+    const prompt = `Você é um gerador de mensagens de commit.
     
     - Responda somente em português (pt-BR).  
     - Use a estrutura do Conventional Commits. 
@@ -41,6 +40,8 @@ export function generateCommitMessage(diff) {
 
     🔍 Alterações no código:  ${diff}
     `;
+
+    if (AI_PROVIDER === "ollama") {
       
 
       // 🧠 Gerar commit message com Ollama
@@ -71,13 +72,7 @@ export function generateCommitMessage(diff) {
         }
       });
     } else if (AI_PROVIDER === "gemini") {
-      const promptGemini = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
-    ⚠️ **IMPORTANTE:**  
-    - Responda **somente** em **português (pt-BR)**.  
-    - Use a estrutura do **Conventional Commits**. 
-
-      ### 🔍 Alterações no código:  ${diff}
-    `;
+     
       //🧠 Gerar commit message com Gemini
       fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`,
@@ -89,7 +84,7 @@ export function generateCommitMessage(diff) {
               {
                 parts: [
                   {
-                    text: promptGemini,
+                    text: prompt,
                   },
                 ],
               },
@@ -200,7 +195,7 @@ async function main() {
     }
 
     const scope = await promptScope();
-    const aiMessage = await generateCommitMessage(diff);
+    const aiMessage = await generateCommitMessage(diff, type, scope);
 
     // Formatar a mensagem final do commit
     const scopeStr = scope ? `(${scope})` : "";

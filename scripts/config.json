@@ -2,76 +2,76 @@
   "types": [
     {
       "value": "feat",
-      "name": "feat:     ✨ Uma nova feature"
+      "name": "feat: ✨ Uma nova feature"
     },
     {
       "value": "fix",
-      "name": "fix:      🐛 Correção de bug"
+      "name": "fix: 🐛 Correção de bug"
     },
     {
       "value": "docs",
-      "name": "docs:     📚 Alterações na documentação"
+      "name": "docs: 📚 Alterações na documentação"
     },
     {
       "value": "style",
-      "name": "style:    💄 Alterações que não afetam o significado do código"
+      "name": "style: 💄 Alterações que não afetam o significado do código"
     },
     {
       "value": "refactor",
-      "name": "refactor: ♻️  Refatoração do código"
+      "name": "refactor: ♻️ Refatoração do código"
     },
     {
       "value": "perf",
-      "name": "perf:     ⚡️ Melhorias de performance"
+      "name": "perf: ⚡️ Melhorias de performance"
     },
     {
       "value": "test",
-      "name": "test:     ✅ Adicionando testes"
+      "name": "test: ✅ Adicionando testes"
     },
     {
       "value": "chore",
-      "name": "chore:    🔧 Alterações em arquivos de configuração"
+      "name": "chore: 🔧 Alterações em arquivos de configuração"
     },
     {
       "value": "ci",
-      "name": "ci:       👷 Alterações na configuração do CI"
+      "name": "ci: 👷 Alterações na configuração do CI"
     },
     {
       "value": "build",
-      "name": "build:    📦 Alterações que afetam o sistema de build"
+      "name": "build: 📦 Alterações que afetam o sistema de build"
     }
   ],
   "scopes": [
     {
-      "name": "web:      🌐 Interface web e páginas",
+      "name": "web: 🌐 Interface web e páginas",
       "value": "web"
     },
     {
-      "name": "docs:     📚 Documentação do projeto",
+      "name": "docs: 📚 Documentação do projeto",
       "value": "docs"
     },
     {
-      "name": "ui:       🎨 Componentes de interface",
+      "name": "ui: 🎨 Componentes de interface",
       "value": "ui"
     },
     {
-      "name": "core:     ⚙️  Funcionalidades principais",
+      "name": "core: ⚙️ Funcionalidades principais",
       "value": "core"
     },
     {
-      "name": "config:   🔧 Arquivos de configuração",
+      "name": "config: 🔧 Arquivos de configuração",
       "value": "config"
     },
     {
-      "name": "deps:     📦 Dependências",
+      "name": "deps: 📦 Dependências",
       "value": "deps"
     },
     {
-      "name": "custom:   🔧 Escopo personalizado",
+      "name": "custom: 🔧 Escopo personalizado",
       "value": "custom"
     },
     {
-      "name": "none:     🔧 Nenhum escopo",
+      "name": "none: 🔧 Nenhum escopo",
       "value": null
     }
   ]
