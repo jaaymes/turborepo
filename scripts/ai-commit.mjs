@@ -228,7 +228,7 @@ async function main() {
         }
 
         // Se os testes e lint passaram, realiza o commit
-        exec(`git commit -m ${JSON.stringify(commitMessage)}`, (error, stdout, stderr) => {
+        exec(`git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/`/g, '\\`')}"`, (error, stdout, stderr) => {
           if (error) {
             console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
             return;
