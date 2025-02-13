@@ -32,23 +32,25 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
+  
+
     if (AI_PROVIDER === "ollama") {
       const prompt = `
-      <|begin_of_text|>
-  <|start_header_id|>system<|end_header_id|>
-  You are a commit message generator.
-  <|eot_id|>
-  <|start_header_id|>user<|end_header_id|>
-  Please generate a clear and concise commit message for the following code changes. 
-  Important:
-  - The commit message must be in Portuguese brazilian.
-  - Use the Conventional Commits structure.
+    <|begin_of_text|>
+    [INST] Você é um gerador de mensagens de commit.
+    
+    Gere uma mensagem de commit clara e concisa para as seguintes alterações no código.
+    
+    **Requisitos:**
+    - A mensagem deve estar em português brasileiro.
+    - Utilize a estrutura do Conventional Commits.
 
-  ### Code changes: ${diff}
-  <|eot_id|>
-  <|start_header_id|>assistant<|end_header_id|>
-  Generate a commit message for the following changes:
+    **Alterações no código:**  
+    ${diff}
+    
+    [/INST]
 `;
+
       // 🧠 Gerar commit message com Ollama
       const process = spawn("ollama", ["run", MODEL_NAME], {
         stdio: ["pipe", "pipe", "pipe"],
