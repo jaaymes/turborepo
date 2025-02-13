@@ -11,10 +11,10 @@ describe("Componente Input", () => {
   });
 
   it("deve aplicar className personalizada", () => {
-    render(<Input type="text" className="custom-class" />);
+    render(<Input type="text" className="bg-blue-500" />);
 
     const inputElement = screen.getByRole("textbox");
-    expect(inputElement).toHaveClass("custom-class");
+    expect(inputElement).toHaveClass("bg-blue-500");
   });
 
   it("deve encaminhar a ref para o elemento input", () => {
