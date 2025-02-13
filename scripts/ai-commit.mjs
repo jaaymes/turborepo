@@ -19,7 +19,8 @@ const czConfig = JSON.parse(
 );
 
 // 🔧 Configuração da IA (futuramente pode ser movida para .env)
-const AI_PROVIDER = process.env.AI_PROVIDER || "ollama"; // "ollama" ou "gemini"
+const AI_PROVIDER = process.env.AI_PROVIDER || "ollama";
+console.log('AI Provider: ???', AI_PROVIDER);
 const MODEL_NAME = process.env.MODEL_NAME; // Modelo para Gemini ou Ollama
 
 // 🔄 Configuração do Gemini (substitua pela sua chave de API)
@@ -32,9 +33,8 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
-  
-
     if (AI_PROVIDER === "ollama") {
+      console.log("Caindo no ollama");
       const prompt = `
     <|begin_of_text|>
     [INST] Você é um gerador de mensagens de commit.
@@ -79,7 +79,7 @@ export function generateCommitMessage(diff) {
         }
       });
     } else if (AI_PROVIDER === "gemini") {
-      const prompt = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
+      const promptGemini = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
     ⚠️ **IMPORTANTE:**  
     - Responda **somente** em **português (pt-BR)**.  
     - Use a estrutura do **Conventional Commits**. 
@@ -97,7 +97,7 @@ export function generateCommitMessage(diff) {
               {
                 parts: [
                   {
-                    text: prompt,
+                    text: promptGemini,
                   },
                 ],
               },
