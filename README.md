@@ -1,4 +1,4 @@
-# Shadcn UI Monorepo
+# Turborepo Monorepo
 
 Este repositório é um monorepo gerenciado com Turborepo, contendo múltiplos aplicativos e pacotes. A estrutura do projeto é a seguinte:
 
@@ -20,7 +20,7 @@ Este repositório é um monorepo gerenciado com Turborepo, contendo múltiplos a
 
    ```bash
    git clone <URL_DO_REPOSITORIO>
-   cd shadcn-ui-monorepo
+   cd turborepo
    ```
 
 2. Instale as dependências:
@@ -49,17 +49,27 @@ Os scripts podem ser executados usando o comando `pnpm <script>`:
 ## Executando o Projeto
 
 ### Aplicativo Web
-
 Para iniciar o aplicativo web, execute:
+### Iniciar o aplicativo web em modo de desenvolvimento
 
 ```bash
-pnpm start
+pnpm dev --filter=web
+```
+
+### Iniciar o aplicativo web em modo de produção
+```bash
+pnpm start --filter=web
 ```
 
 ### Aplicativo Storybook
-
 Para iniciar o aplicativo Storybook, execute:
+### Iniciar o aplicativo Storybook em modo de desenvolvimento
 
+```bash
+pnpm dev --filter=storybook
+```
+
+### Iniciar o aplicativo Storybook em modo de produção
 ```bash
 pnpm build:storybook
 pnpm start:storybook
@@ -68,7 +78,11 @@ pnpm start:storybook
 ## Configuração do AI Commit
 
 O projeto utiliza o script `cz` para gerar mensagens de commit. Para configurar o commit, execute:
+depois de adicionado os arquivos para commit, execute: Ex: `git add .`
 
+Execute o script, ele iniciará um processo de geração de commit message com a IA, que poderá ser com Gemini ou Ollama. verifique o .env.example para configurar o AI_PROVIDER e o MODEL_NAME.
+
+### Executar o script
 ```bash
 pnpm cz
 ```
