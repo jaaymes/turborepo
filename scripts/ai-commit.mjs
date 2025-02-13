@@ -32,13 +32,46 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
-    const prompt = `Você é um gerador de mensagens de commit.
-    
-    - Responda somente em português (pt-BR).  
-    - Use a estrutura do Conventional Commits. 
-    - Seja objetivo e direto.
+    const prompt = `
+    Você é um gerador de mensagens de commit no formato Conventional Commits.  
 
-    🔍 Alterações no código:  ${diff}
+### **Instruções:**  
+1. **Responda apenas com a mensagem do commit** no formato correto. Não inclua explicações adicionais.  
+2. Use a seguinte estrutura:  
+3. **Tipos de commit aceitos:**  
+- 'feat': ✨ Nova funcionalidade  
+- 'fix': 🐛 Correção de bug  
+- 'docs': 📚 Atualização na documentação  
+- 'style': 🎨 Melhorias de formatação  
+- 'refactor': 🔨 Refatoração de código  
+- 'test': ✅ Adição ou alteração de testes  
+- 'chore': 🔧 Tarefas de manutenção (build, CI, etc.)
+### **Entrada:**  
+- **Tipo do commit:** {tipo}  
+- **Escopo do commit (opcional):** {escopo}  
+- **Descrição breve:** {descricao}  
+
+### **Exemplo de saída esperada:**  
+- 'feat(login): adiciona campo de senha e botão de login'  
+- 'fix(api): corrige erro de autenticação'  
+- 'docs(readme): atualiza a documentação do projeto'  
+- 'style(ui): melhora a formatação dos botões'  
+- 'refactor(auth): refatora a lógica de autenticação'  
+- 'test(api): adiciona testes para a API de usuários'  
+- 'chore(build): atualiza o arquivo de configuração do build'
+*
+* 
+*
+*
+*
+*
+*
+*
+*
+*
+
+ Alterações no código:
+${diff}
     `;
 
     if (AI_PROVIDER === "ollama") {
