@@ -1,24 +1,26 @@
 import chalk from "chalk";
 import { exec, spawn } from "child_process";
-import dotenv from 'dotenv';
-import fs, { readFileSync } from 'fs';
-import inquirer from 'inquirer';
+import dotenv from "dotenv";
+import fs, { readFileSync } from "fs";
+import inquirer from "inquirer";
 import fetch from "node-fetch";
 import ora from "ora";
-import { dirname, join } from 'path';
-import { fileURLToPath } from 'url';
+import { dirname, join } from "path";
+import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Carrega as variáveis do .env
-dotenv.config({ path: join(__dirname, '../.env') });
+dotenv.config({ path: join(__dirname, "../.env") });
 
-const czConfig = JSON.parse(readFileSync(join(__dirname, './config.json'), 'utf8'));
+const czConfig = JSON.parse(
+  readFileSync(join(__dirname, "./config.json"), "utf8")
+);
 
 // 🔧 Configuração da IA (futuramente pode ser movida para .env)
 const AI_PROVIDER = process.env.AI_PROVIDER || "ollama"; // "ollama" ou "gemini"
-const MODEL_NAME = AI_PROVIDER === "gemini" ? process.env.MODEL_NAME : "mistral"; // Modelo para Gemini ou Ollama
+const MODEL_NAME = process.env.MODEL_NAME; // Modelo para Gemini ou Ollama
 
 // 🔄 Configuração do Gemini (substitua pela sua chave de API)
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY; // ⚠️ Coloque sua chave da API do Gemini
@@ -30,14 +32,23 @@ export function generateCommitMessage(diff) {
       color: "cyan",
     }).start();
 
-    const prompt = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
-          ⚠️ **IMPORTANTE:**  
-          - Responda **somente** em **português (pt-BR)**.  
-          - Use a estrutura do **Conventional Commits**. 
-
-            ### 🔍 Alterações no código:  ${diff}`;
-
     if (AI_PROVIDER === "ollama") {
+      const prompt = `
+      <|begin_of_text|>
+  <|start_header_id|>system<|end_header_id|>
+  You are a commit message generator.
+  <|eot_id|>
+  <|start_header_id|>user<|end_header_id|>
+  Please generate a clear and concise commit message for the following code changes. 
+  Important:
+  - The commit message must be in Portuguese brazilian.
+  - Use the Conventional Commits structure.
+
+  ### Code changes: ${diff}
+  <|eot_id|>
+  <|start_header_id|>assistant<|end_header_id|>
+  Generate a commit message for the following changes:
+`;
       // 🧠 Gerar commit message com Ollama
       const process = spawn("ollama", ["run", MODEL_NAME], {
         stdio: ["pipe", "pipe", "pipe"],
@@ -66,7 +77,14 @@ export function generateCommitMessage(diff) {
         }
       });
     } else if (AI_PROVIDER === "gemini") {
-      // 🧠 Gerar commit message com Gemini
+      const prompt = `Gere uma mensagem de commit clara e objetiva para a seguinte alteração no código.  
+    ⚠️ **IMPORTANTE:**  
+    - Responda **somente** em **português (pt-BR)**.  
+    - Use a estrutura do **Conventional Commits**. 
+
+      ### 🔍 Alterações no código:  ${diff}
+    `;
+      //🧠 Gerar commit message com Gemini
       fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${MODEL_NAME}:generateContent?key=${GEMINI_API_KEY}`,
         {
@@ -132,14 +150,14 @@ export function getGitDiff() {
 async function promptCommitType() {
   const { type } = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'type',
-      message: 'Escolha o tipo de commit:',
-      choices: czConfig.types.map(type => ({
+      type: "list",
+      name: "type",
+      message: "Escolha o tipo de commit:",
+      choices: czConfig.types.map((type) => ({
         name: type.name,
-        value: type.value
-      }))
-    }
+        value: type.value,
+      })),
+    },
   ]);
   return type;
 }
@@ -147,26 +165,25 @@ async function promptCommitType() {
 async function promptScope() {
   const { scope } = await inquirer.prompt([
     {
-      type: 'list',
-      name: 'scope',
-      message: 'Escolha o escopo:',
+      type: "list",
+      name: "scope",
+      message: "Escolha o escopo:",
       choices: [
-        ...czConfig.scopes.map(scope => ({
+        ...czConfig.scopes.map((scope) => ({
           name: scope.name,
-          value: scope.name
+          value: scope.name,
         })),
-
-      ]
-    }
+      ],
+    },
   ]);
 
-  if (scope === 'custom') {
+  if (scope === "custom") {
     const { customScope } = await inquirer.prompt([
       {
-        type: 'input',
-        name: 'customScope',
-        message: 'Digite o escopo personalizado:'
-      }
+        type: "input",
+        name: "customScope",
+        message: "Digite o escopo personalizado:",
+      },
     ]);
     return customScope;
   }
@@ -190,9 +207,9 @@ async function main() {
 
     const scope = await promptScope();
     const aiMessage = await generateCommitMessage(diff);
-    
+
     // Formatar a mensagem final do commit
-    const scopeStr = scope ? `(${scope})` : '';
+    const scopeStr = scope ? `(${scope})` : "";
     const commitMessage = `${type}${scopeStr}: ${aiMessage}`;
 
     console.log(chalk.green.bold("\nMensagem de commit gerada:\n"));
@@ -200,72 +217,92 @@ async function main() {
 
     const { confirm } = await inquirer.prompt([
       {
-        type: 'confirm',
-        name: 'confirm',
-        message: 'Deseja usar essa mensagem?',
-        default: true
-      }
+        type: "list",
+        name: "confirm",
+        message: "Deseja usar essa mensagem?",
+        choices: [
+          { name: "Sim", value: "yes" },
+          { name: "Não, editar no Vim", value: "edit" },
+          { name: "Cancelar e abandonar", value: "cancel" },
+        ],
+        default: "yes",
+      },
     ]);
 
-    if (confirm) {
+    if (confirm === "yes") {
       // Executa os testes e o lint antes do commit
       console.log(chalk.blue("\nExecutando testes e verificação de código..."));
-      
-      const testProcess = exec('pnpm test && pnpm lint');
 
-      testProcess.stdout.on('data', (data) => {
+      const testProcess = exec("pnpm test && pnpm lint");
+
+      testProcess.stdout.on("data", (data) => {
         console.log(chalk.white(data.toString()));
       });
 
-      testProcess.stderr.on('data', (data) => {
+      testProcess.stderr.on("data", (data) => {
         console.error(chalk.red(data.toString()));
       });
 
-      testProcess.on('close', (code) => {
+      testProcess.on("close", (code) => {
         if (code !== 0) {
           console.error(chalk.red("Falha nos testes ou lint."));
           return;
         }
 
         // Se os testes e lint passaram, realiza o commit
-        exec(`git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/`/g, '\\`')}"`, (error, stdout, stderr) => {
-          if (error) {
-            console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
-            return;
+        exec(
+          `git commit -m "${commitMessage.replace(/"/g, '\\"').replace(/`/g, "\\`")}"`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(
+                chalk.red(`Erro ao realizar commit: ${stderr || error.message}`)
+              );
+              return;
+            }
+            console.log(chalk.green("\n✓ Testes e lint passaram"));
+            console.log(chalk.green(stdout));
           }
-          console.log(chalk.green("\n✓ Testes e lint passaram"));
-          console.log(chalk.green(stdout));
-        });
+        );
       });
-    } else {
+    } else if (confirm === "edit") {
       // Abre o Vim para editar a mensagem de commit
-      const tempFilePath = '/tmp/commit_message.txt';
+      const tempFilePath = "/tmp/commit_message.txt";
 
       // Escreve a mensagem gerada em um arquivo temporário
       fs.writeFileSync(tempFilePath, commitMessage);
 
       // Abre o Vim para editar a mensagem
-      const vimProcess = spawn('vim', [tempFilePath], { stdio: 'inherit' });
+      const vimProcess = spawn("vim", [tempFilePath], { stdio: "inherit" });
 
-      vimProcess.on('exit', (code) => {
+      vimProcess.on("exit", (code) => {
         if (code !== 0) {
           console.log(chalk.red("Edição da mensagem de commit cancelada."));
           return;
         }
 
         // Lê a mensagem editada
-        const editedMessage = fs.readFileSync(tempFilePath, 'utf8').trim();
+        const editedMessage = fs.readFileSync(tempFilePath, "utf8").trim();
 
         // Realiza o commit com a mensagem editada
-        exec(`git commit -m ${JSON.stringify(editedMessage)}`, (error, stdout, stderr) => {
-          if (error) {
-            console.error(chalk.red(`Erro ao realizar commit: ${stderr || error.message}`));
-            return;
+        exec(
+          `git commit -m ${JSON.stringify(editedMessage)}`,
+          (error, stdout, stderr) => {
+            if (error) {
+              console.error(
+                chalk.red(`Erro ao realizar commit: ${stderr || error.message}`)
+              );
+              return;
+            }
+            console.log(
+              chalk.green("\n✓ Commit realizado com a mensagem editada")
+            );
+            console.log(chalk.green(stdout));
           }
-          console.log(chalk.green("\n✓ Commit realizado com a mensagem editada"));
-          console.log(chalk.green(stdout));
-        });
+        );
       });
+    } else if (confirm === "cancel") {
+      console.log(chalk.yellow("Commit cancelado e abandonado."));
+      return;
     }
   } catch (error) {
     console.error(chalk.red(`Erro: ${error.message}`));
