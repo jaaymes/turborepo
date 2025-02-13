@@ -20,7 +20,6 @@ const czConfig = JSON.parse(
 
 // 🔧 Configuração da IA (futuramente pode ser movida para .env)
 const AI_PROVIDER = process.env.AI_PROVIDER || "ollama";
-console.log('AI Provider: ???', AI_PROVIDER);
 const MODEL_NAME = process.env.MODEL_NAME; // Modelo para Gemini ou Ollama
 
 // 🔄 Configuração do Gemini (substitua pela sua chave de API)
@@ -34,11 +33,13 @@ export function generateCommitMessage(diff) {
     }).start();
 
     if (AI_PROVIDER === "ollama") {
-      console.log("Caindo no ollama");
       const prompt = `
     <|begin_of_text|>
-    [INST] Você é um gerador de mensagens de commit.
+    <|start_header_id|>system<|end_header_id|>
+    Você é um gerador de mensagens de commit.
     
+
+    <|eot_id|>
     Gere uma mensagem de commit clara e concisa para as seguintes alterações no código.
     
     **Requisitos:**
@@ -46,9 +47,11 @@ export function generateCommitMessage(diff) {
     - Utilize a estrutura do Conventional Commits.
 
     **Alterações no código:**  
+    <|eot_id|>
+    <|start_header_id|>user<|end_header_id|>
     ${diff}
-    
-    [/INST]
+    <|eot_id|>
+    <|start_header_id|>assistant<|end_header_id|>
 `;
 
       // 🧠 Gerar commit message com Ollama
