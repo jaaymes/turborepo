@@ -272,22 +272,43 @@ async function main() {
         // Lê a mensagem editada
         const editedMessage = fs.readFileSync(tempFilePath, "utf8").trim();
 
-        // Realiza o commit com a mensagem editada
-        exec(
-          `git commit -m ${JSON.stringify(editedMessage)}`,
-          (error, stdout, stderr) => {
-            if (error) {
-              console.error(
-                chalk.red(`Erro ao realizar commit: ${stderr || error.message}`)
-              );
-              return;
-            }
-            console.log(
-              chalk.green("\n✓ Commit realizado com a mensagem editada")
-            );
-            console.log(chalk.green(stdout));
+        // Executa os testes e o lint antes do commit
+        console.log(chalk.blue("\nExecutando testes e verificação de código..."));
+
+        const testProcess = exec("pnpm test && pnpm lint");
+
+        testProcess.stdout.on("data", (data) => {
+          console.log(chalk.white(data.toString()));
+        });
+
+        testProcess.stderr.on("data", (data) => {
+          console.error(chalk.red(data.toString()));
+        });
+
+        testProcess.on("close", (code) => {
+          if (code !== 0) {
+            console.error(chalk.red("Falha nos testes ou lint."));
+            return;
           }
-        );
+
+          // Realiza o commit com a mensagem editada se os testes passarem
+          exec(
+            `git commit -m ${JSON.stringify(editedMessage)}`,
+            (error, stdout, stderr) => {
+              if (error) {
+                console.error(
+                  chalk.red(`Erro ao realizar commit: ${stderr || error.message}`)
+                );
+                return;
+              }
+              console.log(chalk.green("\n✓ Testes e lint passaram"));
+              console.log(
+                chalk.green("\n✓ Commit realizado com a mensagem editada")
+              );
+              console.log(chalk.green(stdout));
+            }
+          );
+        });
       });
     } else if (confirm === "cancel") {
       console.log(chalk.yellow("Commit cancelado e abandonado."));
