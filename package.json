@@ -6,6 +6,7 @@
   "scripts": {
     "build": "turbo build",
     "build:storybook": "turbo run build:storybook",
+    "dev:web": "turbo run dev --filter=web",
     "start": "cd apps/web && pnpm start",
     "dev": "turbo dev",
     "lint": "turbo lint",
